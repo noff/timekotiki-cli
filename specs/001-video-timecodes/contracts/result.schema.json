@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://timekotiki.local/schemas/result/1.json",
+  "title": "timekotiki generate --json result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source",
+    "duration",
+    "speech_language",
+    "title_language",
+    "chapters",
+    "options",
+    "warnings",
+    "transcript_cached"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "source": { "type": "string", "description": "Имя входного файла" },
+    "duration": { "type": "number", "exclusiveMinimum": 0, "description": "Секунды" },
+    "speech_language": { "type": "string", "pattern": "^[a-z]{2,3}$" },
+    "title_language": { "type": "string", "pattern": "^[a-z]{2,3}$" },
+    "chapters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["start", "end", "timecode", "title"],
+        "properties": {
+          "start": { "type": "number", "minimum": 0 },
+          "end": { "type": "number", "exclusiveMinimum": 0 },
+          "timecode": { "type": "string", "pattern": "^(\\d{2}:\\d{2}|\\d+:\\d{2}:\\d{2})$" },
+          "title": { "type": "string", "minLength": 1, "maxLength": 60 }
+        }
+      }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min_chapter", "max_chapters", "asr_model", "llm_model"],
+      "properties": {
+        "min_chapter": { "type": "number", "minimum": 10 },
+        "max_chapters": { "type": ["integer", "null"], "minimum": 1 },
+        "asr_model": { "type": "string" },
+        "llm_model": { "type": "string" }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "enum": ["fewer_than_3_chapters", "chapter_shorter_than_10s", "single_topic"]
+      }
+    },
+    "transcript_cached": { "type": "boolean" }
+  }
+}
